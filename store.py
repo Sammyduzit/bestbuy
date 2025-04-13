@@ -16,7 +16,11 @@ class Store:
 
 
     def get_total_quantity(self):
-        return f"There are {len(self.product_list)} Products in store."
+        total_quantity = 0
+        for product in self.product_list:
+            total_quantity += product.get_quantity()
+
+        return f"Total of {total_quantity} items in store."
 
 
     def get_all_products(self):
@@ -34,5 +38,3 @@ class Store:
             total_price += price
 
         return total_price
-
-
