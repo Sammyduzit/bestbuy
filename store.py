@@ -19,6 +19,11 @@ class Store:
         :param product: Product to add to the store.
         :return: None
         """
+        #Check if product already is in product list, if yes, update quantity
+        for existing_product in self.product_list:
+            if existing_product.name == product.name:
+                existing_product.set_quantity(existing_product.get_quantity() + product.get_quantity())
+                return
         self.product_list.append(product)
 
 

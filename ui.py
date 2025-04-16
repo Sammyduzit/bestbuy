@@ -119,7 +119,7 @@ def order_products(my_store):
     :return: None
     """
     display_products(my_store)
-    shopping_list = []
+    shopping_dict = {}
     product_list = my_store.get_all_products()
     if not product_list:
         print(f"{Fore.YELLOW}No products available to order.")
@@ -138,14 +138,17 @@ def order_products(my_store):
         if not quantity_choice:
             break
 
-        shopping_list.append((selected_product, quantity_choice))
+        shopping_dict[selected_product] = shopping_dict.get(selected_product, 0) + quantity_choice
+
         print(f"{Fore.GREEN}Added {quantity_choice} of {selected_product.name} to your cart.")
         print()
 
-    if shopping_list:
+    if shopping_dict:
+        # Convert the dictionary back to a list of tuples for processing
+        shopping_list = list(shopping_dict.items())
         try:
             total_price = my_store.order(shopping_list)
-            print(f"{Fore.GREEN}********\nOrder successful!\n")
+            print(f"\n{Fore.GREEN}********\nOrder successful!\n")
             display_shopping_list(shopping_list)
             print(f"\nTotal payment: ${total_price:.2f}")
         except Exception as e:
