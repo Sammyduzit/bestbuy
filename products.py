@@ -86,7 +86,7 @@ class Product:
         Return a string representation of the product's details (name, price, quantity)
         :return: String with the product's name, price, and quantity.
         """
-        return f"{self.name}, Price: {self.price}, Quantity: {self.quantity}"
+        return f"{self.name}, Price: ${self.price}, Quantity: {self.quantity}"
 
 
     def buy(self, quantity) -> float:
