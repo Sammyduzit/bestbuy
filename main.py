@@ -1,26 +1,41 @@
-import colorama
-
 import products
 import store
-from colorama import Fore
+from colorama import Fore, init
 
-colorama.init(autoreset=True)
+init(autoreset=True)
 
 def exit_program():
+    """
+    Exit program.
+    :return: None
+    """
     print(f"{Fore.GREEN}Exiting the program. Goodbye!")
     exit()
 
 
 def display_products(my_store):
+    """
+    Display all active products in the store.
+    :param my_store: The store instance containing the products.
+    :return: None
+    """
     active_products = my_store.get_all_products()
+    if not active_products:
+        print(f"{Fore.YELLOW}No active products available in the store.")
+        return
+
     print("------")
-    for i, product in enumerate(active_products, start=1):
-        print(f"{i}. {product.show()}")
+    for index, product in enumerate(active_products, start=1):
+        print(f"{Fore.BLUE}{index}. {product.show()}")
     print("------")
 
 
 def display_menu():
-    print("\n\tStore Menu\n"
+    """
+    Display the main menu options.
+    :return: None
+    """
+    print(f"{Fore.MAGENTA}\n\tStore Menu\n"
           "\t----------\n"
           "1. List all products in store\n"
           "2. Show total amount in store\n"
@@ -29,86 +44,131 @@ def display_menu():
 
 
 def display_total_product_quantity(my_store):
+    """
+    Display the total quantity of all products in the store.
+    :param my_store: The store instance containing the products.
+    :return: None
+    """
+    total_quantity = my_store.get_total_quantity()
     print("------")
-    print(my_store.get_total_quantity())
+    print(f"Total of {total_quantity} items in store.")
     print("------")
+
+
+def get_valid_input(prompt, max_value):
+    """
+    Prompt the user for a valid integer input. Checks if input is in specified range (0 until max_value)
+    :param prompt: The input prompt message.
+    :param max_value: The maximum allowed value.
+    :return: int | None: The validated input, or None if the user cancels.
+    """
+    while True:
+        choice = input(prompt)
+        if not choice:
+            return None
+
+        try:
+            value = int(choice)
+        except ValueError:
+            print(f"{Fore.RED}Please enter a valid number.")
+            continue
+
+        if value <= 0 or value > max_value:
+            print(f"{Fore.RED}Please enter a valid number between 1 and {max_value}.")
+            continue
+
+        return value
 
 
 def get_product_number_input(product_list):
-    while True:
-        product_choice = input("Which product # do you want? ")
-        if not product_choice:
-            break
-
-        active_products_amount = len(product_list)
-        try:
-            product_number = int(product_choice)
-        except ValueError:
-            print(f"{Fore.RED}Please enter a valid number")
-            continue
-
-        if product_number > active_products_amount or 0 >= product_number:
-            print(f"{Fore.RED}Please enter a valid number in the range between 1 and {active_products_amount}")
-            continue
-        else:
-            return product_number
+    """
+    Prompt the user to select a product by its number.
+    :param product_list: The list of active products.
+    :return: int | None: The selected product number, or None if the user cancels.
+    """
+    active_products_amount = len(product_list)
+    product_prompt = "Which product # do you want? "
+    return get_valid_input(product_prompt, active_products_amount)
 
 
+def get_product_amount_input(product):
+    """
+    Prompt the user to specify the quantity of a selected product.
+    :param product: The selected product.
+    :return: int | None: The selected quantity, or None if the user cancels.
+    """
+    available_product_quantity = product.get_quantity()
+    product_amount_prompt = "What amount do you want? "
+    return get_valid_input(product_amount_prompt, available_product_quantity)
 
-def get_product_amount_input():
-    pass
+
+def display_shopping_list(shopping_list):
+    """
+    Display the shopping list in a formatted table.
+    :param shopping_list: The shopping list.
+    :return: None
+    """
+    if not shopping_list:
+        print(f"{Fore.YELLOW}Your shopping list is empty.")
+        return
+
+    print("Order Summary:")
+
+    # Print the header
+    print(f"{'Product':<30} {'Amount':<10}")
+    print("-" * 40)
+
+    # Print each product and its amount
+    for product, amount in shopping_list:
+        print(f"{product.name:<30} {amount:<10}")
 
 
 def order_products(my_store):
+    """
+    Allow the user to make an order by selecting products and quantities.
+    :param my_store: The store instance containing the products.
+    :return: None
+    """
     display_products(my_store)
     shopping_list = []
     product_list = my_store.get_all_products()
+    if not product_list:
+        print(f"{Fore.YELLOW}No products available to order.")
+        return
+
     print("When you want to finish order, enter empty text.")
     while True:
-        product_choice = input("Which product # do you want? ")
-        if not product_choice:
+        product_number = get_product_number_input(product_list)
+        if not product_number:
             break
 
-        active_products_amount = len(product_list)
-        try:
-            product_number = int(product_choice)
-        except ValueError:
-            print(f"{Fore.RED}Please enter a valid number")
-            continue
-        if product_number > active_products_amount or 0 >= product_number:
-            print(f"{Fore.RED}Please enter a valid number in the range between 1 and {active_products_amount}")
-            continue
+        product_index = product_number - 1
+        selected_product = product_list[product_index]
 
-
-        while True:
-            quantity_choice = input("What amount do you want? ")
-            if not quantity_choice:
-                break
-
-            try:
-                quantity_choice = int(quantity_choice)
-            except ValueError:
-                print(f"{Fore.RED}Please enter a valid number")
-                continue
-
-            product_index = product_number - 1
-            available_product_quantity = product_list[product_index].get_quantity()
-            if quantity_choice > available_product_quantity or quantity_choice <= 0:
-                print(f"{Fore.RED}Please enter a valid number in the range between 1 and {available_product_quantity}")
-                continue
-            else:
-                shopping_list.append((product_list[product_index], quantity_choice))
-                print()
-                break
-        if not shopping_list:
+        quantity_choice = get_product_amount_input(selected_product)
+        if not quantity_choice:
             break
+
+        shopping_list.append((selected_product, quantity_choice))
+        print(f"{Fore.GREEN}Added {quantity_choice} of {selected_product.name} to your cart.")
+        print()
 
     if shopping_list:
-        total_price = my_store.order(shopping_list)
-        print(f"********\nOrder successful! Total payment: {total_price}")
+        try:
+            total_price = my_store.order(shopping_list)
+            print(f"{Fore.GREEN}********\nOrder successful!\n")
+            display_shopping_list(shopping_list)
+            print(f"\nTotal payment: {total_price:.2f}")
+        except Exception as e:
+            print(f"{Fore.RED}An error occurred while processing your order: {e}")
 
 
 def start(my_store):
+    """
+    Start the main menu loop.
+    :param my_store: The store instance containing the products.
+    :return: None
+    """
     display_menu()
     user_choice = input("Please choose a number: ")
     dispatcher = {
@@ -117,45 +177,33 @@ def start(my_store):
         "3": order_products,
         "4": exit_program,
     }
-    if user_choice in dispatcher:
-        dispatcher[user_choice](my_store)
-    else:
-        print("Invalid input, please enter a number between 1-4.")
 
+    action = dispatcher.get(user_choice)
+    if action:
+        action(my_store)
+    else:
+        print(f"{Fore.RED}Invalid input. Please enter a number between 1 and {len(dispatcher)}.")
 
 
 
 def main():
+    """
+    Main logic to run the store.
+    :return: None
+    """
     # setup initial stock of inventory
     product_list = [products.Product("MacBook Air M2", price=1450, quantity=100),
                     products.Product("Bose QuietComfort Earbuds", price=250, quantity=500),
                     products.Product("Google Pixel 7", price=500, quantity=250)
                     ]
     best_buy = store.Store(product_list)
-    while True:
-        start(best_buy)
-
-
-
-
-    # all_products = best_buy.get_all_products()
-    # for product in all_products:
-    #     print(product.show())
-
-
-
-
-
-    # product_list = [products.Product("MacBook Air M2", price=1450, quantity=100),
-    #                 products.Product("Bose QuietComfort Earbuds", price=250, quantity=500),
-    #                 products.Product("Google Pixel 7", price=500, quantity=250),
-    #                 ]
-    #
-    # best_buy = store.Store(product_list)
-    # all_products = best_buy.get_all_products()
-    # print(best_buy.get_total_quantity())
-    # print(best_buy.order([(all_products[0], 100), (all_products[1], 2)]))
-    # print(best_buy.get_all_products())
+    try:
+        while True:
+            start(best_buy)
+    except KeyboardInterrupt:
+        print("\nProgram interrupted by user. Exiting...")
+    except Exception as e:
+        print(f"{Fore.RED}An error occurred: {e}")
 
 
 if __name__ == "__main__":

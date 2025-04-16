@@ -1,6 +1,12 @@
 class Product:
 
     def __init__(self, name, price, quantity):
+        """
+        Initializing a new Product instance.
+        :param name: Name of the product. Must be a non-empty string.
+        :param price: Price of the product. Must be an integer greater than zero.
+        :param quantity: Quantity of the product in stock. Must be a positive integer.
+        """
         if not isinstance(name, str):
             raise TypeError("Name must be a string.")
         if not name:
@@ -26,23 +32,45 @@ class Product:
         self.active = True
 
 
-    def is_active(self):
+    def is_active(self) -> bool:
+        """
+        Check if the product is active.
+        :return: bool: True if product is active, False otherwise.
+        """
         return self.active
 
 
     def deactivate(self):
+        """
+        Deactivate the product, marking it as unavailable for purchase.
+        :return: None
+        """
         self.active = False
 
 
     def activate(self):
+        """
+        Activate the product, marking it as available for purchase.
+        :return: None
+        """
         self.active = True
 
 
-    def get_quantity(self):
+    def get_quantity(self) -> int:
+        """
+        Get the current quantity of the product in stock.
+        :return: int: Quantity of the product in stock.
+        """
         return self.quantity
 
 
     def set_quantity(self, quantity):
+        """
+        Set the quantity of the product.
+        :param quantity: The new quantity of the product. Must be a non-negative integer.
+        :return: None
+        :raises: ValueError: If quantity is negative.
+        """
         if quantity < 0:
             raise ValueError("Quantity can not be negative.")
         self.quantity = quantity
@@ -53,11 +81,22 @@ class Product:
 
 
 
-    def show(self):
+    def show(self) -> str:
+        """
+        Return a string representation of the product's details (name, price, quantity)
+        :return: String with the product's name, price, and quantity.
+        """
         return f"{self.name}, Price: {self.price}, Quantity: {self.quantity}"
 
 
-    def buy(self, quantity):
+    def buy(self, quantity) -> float:
+        """
+        Buy a specified quantity of the product.
+        :param quantity: Number of items to buy. Must be a positive integer and not exceed the available stock.
+        :return: float: Total cost of the purchase.
+        :raises:    TypeError: If the quantity is not an integer.
+                    ValueError: If the quantity is invalid (negative or exceeds stock).
+        """
         if not isinstance(quantity, int):
             raise TypeError("Quantity must be a whole number.")
         if quantity > self.quantity:
@@ -69,28 +108,3 @@ class Product:
             self.deactivate()
         return quantity * self.price
 
-
-
-bose = Product("Bose QuietComfort Earbuds", price=50, quantity=115)
-mac = Product("MacBook Air M2", price=1450, quantity=100)
-
-
-# print(bose.show())
-# print(bose.is_active())
-# print(bose.buy(50))
-# print(bose.show())
-# print(bose.is_active())
-# print()
-# print(mac.show())
-# print(mac.buy(100))
-# print(mac.show())
-# print(mac.is_active())
-# print()
-# print(bose.show())
-# print(mac.show())
-# print()
-# bose.set_quantity(1000)
-# mac.set_quantity(1000)
-# print(mac.is_active())
-# print(mac.show())
-# print(bose.show())
