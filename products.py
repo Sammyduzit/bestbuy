@@ -103,8 +103,8 @@ class Product:
             raise ValueError(f"Only {self.quantity} piece(s) left in the store")
         if quantity < 0:
             raise ValueError("Quantity can not be negative.")
-        self.quantity -= quantity
-        if self.quantity == 0:
-            self.deactivate()
+        new_quantity = self.quantity - quantity
+        self.set_quantity(new_quantity)
+
         return quantity * self.price
 

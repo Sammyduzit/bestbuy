@@ -10,12 +10,15 @@ class Store:
          Initialize a new Store instance.
         :param product_list: List of Product instances to initialize the store with.
         """
+        if not all(isinstance(product, Product) for product in product_list):
+            raise TypeError("All items in product_list must be instances of Product.")
         self.product_list = product_list
 
 
     def add_product(self, product):
         """
         Add a product to the store's product list.
+        If the product already exists, updates quantity.
         :param product: Product to add to the store.
         :return: None
         """
@@ -25,19 +28,21 @@ class Store:
                 existing_product.set_quantity(existing_product.get_quantity() + product.get_quantity())
                 return
         self.product_list.append(product)
+        print(f"{Fore.GREEN}Product '{product.name}' added successfully.")
 
 
-    def remove_product(self, product):
+    def remove_product(self, product_name):
         """
         Remove a product from the store's product list.
-        :param product: Product to remove from the store.
+        :param product_name: Product (by name) to remove from the store.
         :return: None
         :raises: ValueError: If the product is not found in the store's product list.
         """
-        if product in self.product_list:
-            self.product_list.remove(product)
-        else:
-            raise ValueError(f"Product {product.name} is not in the store.")
+        for product in self.product_list:
+            if product.name == product_name:
+                self.product_list.remove(product)
+                return
+        raise ValueError(f"Product {product_name} is not in the store.")
 
 
     def get_total_quantity(self) -> int:

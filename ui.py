@@ -104,26 +104,22 @@ def display_shopping_list(shopping_list):
     print("Order Summary:")
 
     # Print the header
-    print(f"{'Product':<30} {'Amount':<10}")
-    print("-" * 40)
+    print(f"{'Product':<30} {'Amount':<10} {"Subtotal":<15}")
+    print("-" * 55)
 
     # Print each product and its amount
     for product, amount in shopping_list:
-        print(f"{product.name:<30} {amount:<10}")
+        subtotal = product.price * amount
+        print(f"{product.name:<30} {amount:<10} {subtotal:<15.2f}")
 
 
-def order_products(my_store):
+def collect_order_items(product_list):
     """
-    Allow the user to make an order by selecting products and quantities.
-    :param my_store: The store instance containing the products.
-    :return: None
+    Collect products and quantities from user input.
+    :param product_list: The list of active products available for ordering.
+    :return: dict: Dictionary mapping selected products to their quantities.
     """
-    display_products(my_store)
     shopping_dict = {}
-    product_list = my_store.get_all_products()
-    if not product_list:
-        print(f"{Fore.YELLOW}No products available to order.")
-        return
 
     print("When you want to finish order, enter empty text.")
     while True:
@@ -142,6 +138,24 @@ def order_products(my_store):
 
         print(f"{Fore.GREEN}Added {quantity_choice} of {selected_product.name} to your cart.")
         print()
+
+    return shopping_dict
+
+
+def order_products(my_store):
+    """
+    Allow the user to make an order by selecting products and quantities.
+    :param my_store: The store instance containing the products.
+    :return: None
+    """
+    display_products(my_store)
+    product_list = my_store.get_all_products()
+
+    if not product_list:
+        print(f"{Fore.YELLOW}No products available to order.")
+        return
+
+    shopping_dict = collect_order_items(product_list)
 
     if shopping_dict:
         # Convert the dictionary back to a list of tuples for processing
