@@ -48,10 +48,9 @@ def main():
     This program simulates a store management system where users can view products,
     check total quantities, and order products.
 
-    The program runs in a loop, displaying a menu of options for interacting with the store's inventory.
+    The program runs in a loop, displaying a menu of options for interaction with the store's inventory.
     :return: None
     """
-    # Initialize the store with products
     best_buy = initialize_store()
 
     try:

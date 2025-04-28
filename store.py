@@ -28,7 +28,7 @@ class Store:
                 existing_product.set_quantity(existing_product.get_quantity() + product.get_quantity())
                 return
         self.product_list.append(product)
-        print(f"{Fore.GREEN}Product '{product.name}' added successfully.")
+
 
 
     def remove_product(self, product_name):
